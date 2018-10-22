@@ -3,6 +3,9 @@
 
 这是一个简单的翻页倒计时vue组件，项目中有用到，所以提取了一下。
 
+### 示例
+![img](https://github.com/javaLuo/vue-flip-down/blob/master/public/demo.gif)
+
 ### 安装
 ```
 npm install vue-flip-down --save
