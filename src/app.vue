@@ -139,7 +139,6 @@ export default {
     // 开始倒计时
     start() {
       clearTimeout(this.timer);
-      console.log('每秒1次啊');
       this.timer = setTimeout(() => {
         let t = this.endTime - new Date().getTime(); // 剩余的毫秒数
         t = t < 0 ? 0 : t;
@@ -169,7 +168,11 @@ export default {
         this.min = String(min).padStart(2, '0');
         this.second = String(second).padStart(2, '0');
 
-        if (t > 0) this.start();
+        if (t > 0) {
+          this.start();
+        } else {
+          this.$emit('timeUp');
+        }
       }, 1000);
     },
     // 日 动画结束

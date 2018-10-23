@@ -1,7 +1,8 @@
 <template>
   <div>
     <CountDown :endDate="endDate"
-               :type="type" />
+               :type="type"
+               @timeUp="onTimeUp" />
 
     <hr />
     <input v-model="type">
@@ -14,7 +15,7 @@ export default {
   data() {
     return {
       type: 4,
-      endDate: new Date().getTime() + 100861100,
+      endDate: new Date().getTime(),
     };
   },
   components: {
@@ -23,6 +24,9 @@ export default {
   methods: {
     onTypeChange(t) {
       this.type = t;
+    },
+    onTimeUp() {
+      console.log('时间到了');
     },
   },
 };
