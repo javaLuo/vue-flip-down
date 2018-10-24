@@ -1,4 +1,6 @@
-# vue-flip-down  [![npm](https://img.shields.io/npm/v/vue-flip-down.svg)](https://www.npmjs.com/package/vue-flip-down)
+# vue-flip-down  [![npm](https://img.shields.io/npm/v/vue-flip-down.svg)](https://www.npmjs.com/package/vue-flip-down) 
+[![npm](https://img.shields.io/npm/dy/vue-flip-down.svg)](https://www.npmjs.com/package/vue-flip-down)
+
 
 
 这是一个简单的翻页倒计时vue组件，项目中有用到，所以提取了一下。
