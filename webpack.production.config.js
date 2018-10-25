@@ -33,12 +33,12 @@ module.exports = {
         use: ['babel-loader'],
         include: path.resolve(__dirname, 'src'),
       },
-      // {
-      //   // .css 解析
-      //   test: /\.css$/,
-      //   use: ['style-loader', 'css-loader', 'postcss-loader'],
-      //   include: path.resolve(__dirname, 'src'),
-      // },
+      {
+        // .css 解析
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader', 'postcss-loader'],
+        include: path.resolve(__dirname, 'src'),
+      },
       {
         // .less 解析
         test: /\.less$/,
