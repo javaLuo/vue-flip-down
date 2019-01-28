@@ -36,12 +36,12 @@ import FlipDown from 'vue-flip-down';
 |theme|Number|1|样式：1-合并，2-分离。见下图|
 |timeUnit|Array|\[\]|时间单位，显示在空隙之间的文字，比如：\['天','时','分','秒'\] 或 \[':',':',':'\]|
 
-#### :type="1" 合并式
+#### :theme="1" 合并式
 ![img](public/1.gif)
 
 > 合并式的，每个不同的时间单位是合在一起的
 
-#### :type="2" 分离式
+#### :theme="2" 分离式
 ![img](public/2.gif)
 
 > 分离式的，每个数字都是单独分开的
