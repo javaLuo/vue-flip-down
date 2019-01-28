@@ -14,7 +14,7 @@ npm install vue-flip-down --save
 或
 ```
 yarn add vue-flip-down 
-```vue
+```
 
 ### 使用
 ```vue
