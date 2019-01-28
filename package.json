@@ -1,6 +1,6 @@
 {
   "name": "vue-flip-down",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "vue 翻页效果的倒计时组件",
   "main": "dist/main.js",
   "scripts": {

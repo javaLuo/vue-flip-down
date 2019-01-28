@@ -2,6 +2,8 @@
   <div>
     <CountDown :endDate="endDate"
                :type="type"
+               :theme="21"
+               
                @timeUp="onTimeUp" />
 
     <hr />
@@ -15,7 +17,7 @@ export default {
   data() {
     return {
       type: 4,
-      endDate: new Date().getTime(),
+      endDate: new Date().getTime() + 30000,
     };
   },
   components: {

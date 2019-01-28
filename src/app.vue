@@ -1,68 +1,24 @@
 <!-- 翻页效果 倒计时组件 -->
 <template>
-  <div class="vue-countdown-component">
-    <!-- 天 -->
-    <div class="time-box"
-         v-if="type>=4">
-      {{day}}
-      <div :class="['b0',{'anime': isDayAnime}]">
-        <div>{{day}}</div>
+  <div :class="['vue-countdown-component', {'theme2': theme !== 1}]">
+    <template v-for="(item, index) in timeArray">
+      <div :class="['time-box']" :key="index">
+        {{item}}
+        <div :class="['b0',{'anime': isAnimate[index]}]">
+          <div>{{item}}</div>
+        </div>
+        <div :class="['a0',{'anime': isAnimate[index]}]"
+            @animationend="onAnimateEnd(index)">
+          <div>{{timeArrayT[index]}}</div>
+        </div>
+        <div class="a1">
+          <div>{{timeArrayT[index]}}</div>
+        </div>
       </div>
-      <div :class="['a0',{'anime': isDayAnime}]"
-           @animationend="onDayAnimateEnd">
-        <div>{{dayDelay}}</div>
+      <div class="time-unit" v-if="isTimeUnitShow(index)">
+       {{setTimeUnit(index)}}
       </div>
-      <div class="a1">
-        <div>{{dayDelay}}</div>
-      </div>
-    </div>
-
-    <!-- 时 -->
-    <div class="time-box"
-         v-if="type>=3">
-      {{hour}}
-      <div :class="['b0',{'anime': isHourAnime}]">
-        <div>{{hour}}</div>
-      </div>
-      <div :class="['a0',{'anime': isHourAnime}]"
-           @animationend="onHourAnimateEnd">
-        <div>{{hourDelay}}</div>
-      </div>
-      <div class="a1">
-        <div>{{hourDelay}}</div>
-      </div>
-    </div>
-
-    <!-- 分 -->
-    <div class="time-box"
-         v-if="type>=2">
-      {{min}}
-      <div :class="['b0',{'anime': isMinAnime}]">
-        <div>{{min}}</div>
-      </div>
-      <div :class="['a0',{'anime': isMinAnime}]"
-           @animationend="onMinAnimateEnd">
-        <div>{{minDelay}}</div>
-      </div>
-      <div class="a1">
-        <div>{{minDelay}}</div>
-      </div>
-    </div>
-
-    <!-- 秒 -->
-    <div class="time-box">
-      {{second}}
-      <div :class="['b0',{'anime': isSecondAnime}]">
-        <div>{{second}}</div>
-      </div>
-      <div :class="['a0',{'anime': isSecondAnime}]"
-           @animationend="onSecondAnimateEnd">
-        <div>{{secondDelay}}</div>
-      </div>
-      <div class="a1">
-        <div>{{secondDelay}}</div>
-      </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -70,24 +26,16 @@
 export default {
   data() {
     return {
-      day: '', // 剩余日
-      dayDelay: '',
-      hour: '', // 剩余小时
-      hourDelay: '',
-      min: '', // 剩余分钟
-      minDelay: '',
-      second: '', // 剩余秒
-      secondDelay: '',
-      timer: null, // 计时器
-      isDayAnime: false, // 日 执行动画
-      isHourAnime: false, // 时 执行动画
-      isMinAnime: false, // 分 执行动画
-      isSecondAnime: false, // 秒 执行动画
+      timeArray: ['00','00','00','00'],
+      timeArrayT: ['00','00','00','00'],
+      isAnimate:[false,false,false,false],
     };
   },
   props: {
     endDate: { type: [Date, Number, String], default: 0 }, // 截止时间
     type: { type: [Number, String], default: 4 }, // 时间精度 4/3/2/1
+    theme: {type: [Number, String], default: 1},
+    timeUnit: {type: Array, default: ()=>[]},
   },
   computed: {
     endTime() {
@@ -96,78 +44,90 @@ export default {
       }
       return Number(this.endDate) > 0 ? Number(this.endDate) : 0;
     },
+    step(){
+      return this.theme === 1 ? 1 : 2;
+    },
+    arr(){
+      const length = this.timeArray.length;
+      const step = this.step;
+      const temp = [length - 1, length - step - 1, length - step * 2 -1, length - step * 3 - 1];
+      temp.length = this.type > 1 ? this.type : 1;
+      return temp;
+    }
   },
   watch: {
-    day(newV) {
-      this.isDayAnime = true;
+    timeArray(newV,oldV){
+      const diff = [];
+     newV.forEach((value,index)=>{
+        if(value !== oldV[index]){
+          this.$set(this.isAnimate, index, true);
+          diff.push({value,index});
+        }
+      });
       setTimeout(() => {
-        this.dayDelay = newV;
-      }, 350);
-    },
-    hour(newV) {
-      this.isHourAnime = true;
-      setTimeout(() => {
-        this.hourDelay = newV;
-      }, 350);
-    },
-    min(newV) {
-      this.isMinAnime = true;
-      setTimeout(() => {
-        this.minDelay = newV;
-      }, 350);
-    },
-    second(newV) {
-      this.isSecondAnime = true;
-      setTimeout(() => {
-        this.secondDelay = newV;
+        diff.forEach((item)=>{
+          this.$set(this.timeArrayT, item.index, item.value);
+        }); 
       }, 350);
     },
     endTime(newV) {
       if (newV > 0) {
-        this.start();
+        this.start(true);
       }
     },
   },
 
   mounted() {
-    this.start();
+    this.start(true);
   },
   beforeDestroy() {
     clearTimeout(this.timer);
   },
   methods: {
     // 开始倒计时
-    start() {
+    start(isFirst) {
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
         let t = this.endTime - new Date().getTime(); // 剩余的毫秒数
         t = t < 0 ? 0 : t;
         let day = 0; // 剩余的天
-        let hour = 0; // 剩余的小时 已排除天
-        let min = 0; // 剩余的分钟 已排除天和小时
+        let hour = 0; // 剩余的小时
+        let min = 0; // 剩余的分钟
         let second = 0; // 剩余的秒
-        let type = Number(this.type);
+        const type = Number(this.type);
         if (type >= 4) {
           day = Math.floor(t / 86400000); // 剩余的天
           hour = Math.floor(t / 3600000 - day * 24); // 剩余的小时 已排除天
           min = Math.floor(t / 60000 - day * 1440 - hour * 60); // 剩余的分钟 已排除天和小时
           second = Math.floor(t / 1000 - day * 86400 - hour * 3600 - min * 60); // 剩余的秒
         } else if (type >= 3) {
-          hour = Math.floor(t / 3600000); // 剩余的小时 已排除天
-          min = Math.floor(t / 60000 - hour * 60); // 剩余的分钟 已排除天和小时
+          hour = Math.floor(t / 3600000); // 剩余的小时
+          min = Math.floor(t / 60000 - hour * 60); // 剩余的分钟 已排小时
           second = Math.floor(t / 1000 - hour * 3600 - min * 60); // 剩余的秒
         } else if (type >= 2) {
-          min = Math.floor(t / 60000); // 剩余的分钟 已排除天和小时
+          min = Math.floor(t / 60000); // 剩余的分钟
           second = Math.floor(t / 1000 - min * 60); // 剩余的秒
         } else {
           second = Math.floor(t / 1000); // 剩余的秒
         }
 
-        this.day = String(day).padStart(2, '0');
-        this.hour = String(hour).padStart(2, '0');
-        this.min = String(min).padStart(2, '0');
-        this.second = String(second).padStart(2, '0');
-
+        let arr = [];
+        if(Number(this.theme) === 1){ // 不分开
+          type>= 4 && arr.push(String(day).padStart(2, '0'));
+          type>= 3 && arr.push(String(hour).padStart(2, '0'));
+          type>= 2 && arr.push(String(min).padStart(2, '0'));
+          arr.push(String(second).padStart(2, '0'));
+        } else { // 分开
+          type>= 4 && arr.push(...String(day).padStart(2, '0').split(''));
+          type>= 3 && arr.push(...String(hour).padStart(2, '0').split(''));
+          type>= 2 && arr.push(...String(min).padStart(2, '0').split(''));
+          arr.push(...String(second).padStart(2, '0').split(''));
+        }
+        this.timeArray = arr;
+        if(isFirst){
+            this.timeArrayT = [...this.timeArray];
+            this.isAnimate = new Array(this.timeArray.length).fill(false);
+          }
         if (t > 0) {
           this.start();
         } else {
@@ -175,24 +135,31 @@ export default {
         }
       }, 1000);
     },
-    // 日 动画结束
-    onDayAnimateEnd() {
-      this.isDayAnime = false;
+    onAnimateEnd(index){
+      this.$set(this.isAnimate, index, false);
     },
-    onHourAnimateEnd() {
-      this.isHourAnime = false;
+    isTimeUnitShow(index){
+      if(this.arr.includes(index)){
+        if(index === this.timeArray.length - 1 && !this.timeUnit[3]){
+          return false;
+        }
+        return true;
+      }
+      return false;
     },
-    onMinAnimateEnd() {
-      this.isMinAnime = false;
-    },
-    onSecondAnimateEnd() {
-      this.isSecondAnime = false;
-    },
+    setTimeUnit(index){
+      switch(index){
+        case this.timeArray.length - 1 : return this.timeUnit[3] || ''; // 秒
+        case this.timeArray.length - this.step - 1: return this.timeUnit[2] || ''; // 分
+        case this.timeArray.length - this.step * 2 -1: return this.timeUnit[1] || ''; // 时
+        default: return this.timeUnit[0] || ''; // 天
+      }
+    }
   },
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .vue-countdown-component {
   display: flex;
   @keyframes animate-filp {
@@ -211,6 +178,20 @@ export default {
       transform: rotateX(0);
     }
   }
+  &.theme2{
+    .time-box{
+      min-width: 21px;
+      & + .time-box {
+        margin-left: 1px;
+      }
+    }
+  }
+  .time-unit{
+      padding: 0 4px;
+      color: #222;
+      font-size: 14px;
+      line-height: 30px;
+    }
   .time-box {
     position: relative;
     box-sizing: border-box;
