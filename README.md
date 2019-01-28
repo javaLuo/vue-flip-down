@@ -5,7 +5,7 @@
 这是一个简单的翻页倒计时vue组件，项目中有用到，所以提取了一下。
 
 ### 示例
-![img](https://github.com/javaLuo/vue-flip-down/blob/master/public/demo.gif)
+![img](public/demo.gif)
 
 ### 安装
 ```
@@ -14,10 +14,10 @@ npm install vue-flip-down --save
 或
 ```
 yarn add vue-flip-down 
-```
+```vue
 
 ### 使用
-```
+```vue
 import FlipDown from 'vue-flip-down';
 
 <FlipDown
@@ -35,6 +35,16 @@ import FlipDown from 'vue-flip-down';
 | type    | Number      | 4    | 要怎么显示倒计时：4-日时分秒，3-时分秒，2-分秒，1-秒                                  |
 |theme|Number|1|样式：1-合并，2-分离。见下图|
 |timeUnit|Array|\[\]|时间单位，显示在空隙之间的文字，比如：\['天','时','分','秒'\] 或 \[':',':',':'\]|
+
+#### :type="1" 合并式
+![img](public/1.gif)
+
+> 合并式的，每个不同的时间单位是合在一起的
+
+#### :type="2" 分离式
+![img](public/2.gif)
+
+> 分离式的，每个数字都是单独分开的
 
 ### 事件
 | 名称   | 返回值 | 描述                                    |
