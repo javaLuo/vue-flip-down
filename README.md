@@ -1,4 +1,4 @@
-# vue-flip-down  [![npm](https://img.shields.io/npm/v/vue-flip-down.svg)](https://www.npmjs.com/package/vue-flip-down) [![npm](https://img.shields.io/npm/dt/vue-flip-down.svg)](https://www.npmjs.com/package/vue-flip-down)
+# vue-flip-down  [![npm](https://img.shields.io/npm/v/vue-flip-down.svg)](https://www.npmjs.com/package/vue-flip-down) [![npm](https://img.shields.io/npm/dy/vue-flip-down.svg)](https://www.npmjs.com/package/vue-flip-down)
 
 
 
