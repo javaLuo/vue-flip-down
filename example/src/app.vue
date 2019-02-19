@@ -2,8 +2,8 @@
   <div>
     <CountDown :endDate="endDate"
                :type="type"
-               :theme="21"
-               
+               :theme="2"
+               :timeUnit="['天','时','分','秒']"
                @timeUp="onTimeUp" />
 
     <hr />
@@ -12,24 +12,24 @@
   </div>
 </template>
 <script>
-import CountDown from '../../dist/main.js';
+import CountDown from "../../dist/main.js";
 export default {
   data() {
     return {
-      type: 4,
-      endDate: new Date().getTime() + 30000,
+      type: 2,
+      endDate: new Date().getTime() + 30000
     };
   },
   components: {
-    CountDown,
+    CountDown
   },
   methods: {
     onTypeChange(t) {
       this.type = t;
     },
     onTimeUp() {
-      console.log('时间到了');
-    },
-  },
+      console.log("时间到了");
+    }
+  }
 };
 </script>
