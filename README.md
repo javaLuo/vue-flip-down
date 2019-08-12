@@ -23,7 +23,6 @@ import FlipDown from 'vue-flip-down';
 
 <FlipDown
   :endDate="1540212399971"  // 倒计时截止的日期
-  :type="4"                 // 倒计时类型
   @timeUp="func"            // 时间到了会触发timeUp事件
 />
 ```
