@@ -1,25 +1,21 @@
 <!-- 翻页效果 倒计时组件 -->
 <template>
-  <div :class="['vue-countdown-component', {'theme2': theme !== 1}]">
+  <div :class="['vue-countdown-component', { theme2: theme !== 1 }]">
     <template v-for="(item, index) in timeArray">
-      <div :class="['time-box']"
-           :key="index">
-        {{item}}
-        <div :class="['b0',{'anime': isAnimate[index]}]">
-          <div>{{item}}</div>
+      <div :class="['time-box']" :style="`color:${color}`" :key="index">
+        {{ item }}
+        <div :class="['b0', { anime: isAnimate[index] }]">
+          <div>{{ item }}</div>
         </div>
-        <div :class="['a0',{'anime': isAnimate[index]}]"
-             @animationend="onAnimateEnd(index)">
-          <div>{{timeArrayT[index]}}</div>
+        <div :class="['a0', { anime: isAnimate[index] }]" @animationend="onAnimateEnd(index)">
+          <div>{{ timeArrayT[index] }}</div>
         </div>
         <div class="a1">
-          <div>{{timeArrayT[index]}}</div>
+          <div>{{ timeArrayT[index] }}</div>
         </div>
       </div>
-      <div class="time-unit"
-           :key="`unit-${index}`"
-           v-if="isTimeUnitShow(index)">
-        {{setTimeUnit(index)}}
+      <div class="time-unit" :key="`unit-${index}`" v-if="isTimeUnitShow(index)">
+        {{ setTimeUnit(index) }}
       </div>
     </template>
   </div>
@@ -29,25 +25,17 @@
 export default {
   data() {
     return {
-      timeArray:
-        this.theme === 2
-          ? new Array(this.type * 2).fill("0")
-          : new Array(this.type).fill("00"),
-      timeArrayT:
-        this.theme === 2
-          ? new Array(this.type * 2).fill("0")
-          : new Array(this.type).fill("00"),
-      isAnimate:
-        this.theme === 2
-          ? new Array(this.type * 2).fill(false)
-          : new Array(this.type).fill(false)
+      color: "#fffffe",
+      timeArray: this.theme === 2 ? new Array(this.type * 2).fill("0") : new Array(this.type).fill("00"),
+      timeArrayT: this.theme === 2 ? new Array(this.type * 2).fill("0") : new Array(this.type).fill("00"),
+      isAnimate: this.theme === 2 ? new Array(this.type * 2).fill(false) : new Array(this.type).fill(false),
     };
   },
   props: {
     endDate: { type: [Date, Number, String], default: 0 }, // 截止时间
     type: { type: [Number, String], default: 4 }, // 时间精度 4/3/2/1
     theme: { type: [Number, String], default: 1 },
-    timeUnit: { type: Array, default: () => [] }
+    timeUnit: { type: Array, default: () => [] },
   },
   computed: {
     endTime() {
@@ -62,15 +50,10 @@ export default {
     arr() {
       const length = this.timeArray.length;
       const step = this.step;
-      const temp = [
-        length - 1,
-        length - step - 1,
-        length - step * 2 - 1,
-        length - step * 3 - 1
-      ];
+      const temp = [length - 1, length - step - 1, length - step * 2 - 1, length - step * 3 - 1];
       temp.length = this.type > 1 ? this.type : 1;
       return temp;
-    }
+    },
   },
   watch: {
     timeArray(newV, oldV) {
@@ -89,20 +72,24 @@ export default {
     },
     endTime(newV) {
       if (newV > 0) {
-        this.start(true);
+        this.start();
       }
-    }
+    },
   },
 
   mounted() {
-    this.start(true);
+    this.start(0);
+    // 这么做是为了浏览器细微渲染时错位的问题
+    setTimeout(() => {
+      this.color = "#ffffff";
+    }, 1000);
   },
   beforeDestroy() {
     clearTimeout(this.timer);
   },
   methods: {
     // 开始倒计时
-    start(isFirst) {
+    start(step = 1000) {
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
         let t = this.endTime - new Date().getTime(); // 剩余的毫秒数
@@ -141,43 +128,43 @@ export default {
             arr.push(
               ...String(day)
                 .padStart(2, "0")
-                .split("")
+                .split(""),
             );
           type >= 3 &&
             arr.push(
               ...String(hour)
                 .padStart(2, "0")
-                .split("")
+                .split(""),
             );
           type >= 2 &&
             arr.push(
               ...String(min)
                 .padStart(2, "0")
-                .split("")
+                .split(""),
             );
           arr.push(
             ...String(second)
               .padStart(2, "0")
-              .split("")
+              .split(""),
           );
         }
         this.timeArray = arr;
-        if (isFirst) {
-          this.timeArrayT = [...this.timeArray];
-          this.isAnimate = new Array(this.timeArray.length).fill(false);
-        }
+        // if (isFirst) {
+        //   this.timeArrayT = [...this.timeArray];
+        //   this.isAnimate = new Array(this.timeArray.length).fill(false);
+        // }
         if (t > 0) {
           this.start();
         } else {
           this.$emit("timeUp");
         }
-      }, 1000);
+      }, step);
     },
+    // 动画完毕后，去掉对应的class, 为下次动画做准备
     onAnimateEnd(index) {
       this.$set(this.isAnimate, index, false);
     },
     isTimeUnitShow(index) {
-      console.log("this.arr是什么：", this.arr);
       if (this.arr.includes(index)) {
         if (index === this.timeArray.length - 1 && !this.timeUnit[3]) {
           return false;
@@ -197,8 +184,8 @@ export default {
         default:
           return this.timeUnit[0] || ""; // 天
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -234,6 +221,7 @@ export default {
     color: #222;
     font-size: 14px;
     line-height: 30px;
+    white-space: nowrap;
   }
   .time-box {
     position: relative;
@@ -244,7 +232,6 @@ export default {
     text-align: center;
     line-height: 30px;
     background-color: #6c96e8;
-    color: #ffffff;
     perspective: 50px;
     border-radius: 3px;
     padding: 0 2px;
@@ -257,6 +244,7 @@ export default {
       top: 50%;
       left: -1px;
       margin-top: -3px;
+      z-index: -1;
     }
     &:after {
       content: "";
@@ -267,6 +255,7 @@ export default {
       top: 50%;
       right: -1px;
       margin-top: -3px;
+      z-index: -1;
     }
     & + .time-box {
       margin-left: 8px;
@@ -277,6 +266,7 @@ export default {
       width: 100%;
       height: 50%;
       overflow: hidden;
+      flex: none;
 
       transform-style: preserve-3d;
       & > div {
@@ -285,13 +275,14 @@ export default {
         width: 100%;
         height: 30px;
       }
+      animation-timing-function: linear;
       &.a0 {
         top: 0;
         // opacity: 0;
         border-radius: 3px 3px 0 0;
         background-color: #6c96e8;
         transform-origin: 50% bottom;
-        animation-duration: 500ms;
+        animation-duration: 400ms;
         // animation-fill-mode: none;
         transform: rotateX(0);
         backface-visibility: hidden;
@@ -308,10 +299,11 @@ export default {
         border-radius: 0 0 3px 3px;
         background-color: #73a1f8;
         transform-origin: 50% top;
-        animation-duration: 500ms;
+        animation-duration: 400ms;
         // animation-fill-mode: none;
         transform: rotateX(180deg);
-        backface-visibility: hidden;
+        backface-visibility: visible; // 这个需要是visible，因为背面不渲染的话，连里面的数据浏览器都不会更新
+
         z-index: 2;
         & > div {
           bottom: 0;
