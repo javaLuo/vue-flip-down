@@ -1,20 +1,21 @@
 <!-- 翻页效果 倒计时组件 -->
 <template>
-  <div :class="['vue-countdown-component', { theme2: theme !== 1 }]">
+  <div :class="['vue-countdown-component', { theme2: theme !== 1 }, {ie: isIE}]">
     <template v-for="(item, index) in timeArray">
-      <div :class="['time-box']" :style="`color:${color}`" :key="index">
-        {{ item }}
-        <div :class="['b0', { anime: isAnimate[index] }]">
-          <div>{{ item }}</div>
+      <div :class="['time-box']"
+           :key="index">
+        <!-- 底层基础div -->
+        <div class="base">{{ item }}<div class="base-b">{{ timeArrayT[index] }}</div>
         </div>
-        <div :class="['a0', { anime: isAnimate[index] }]" @animationend="onAnimateEnd(index)">
-          <div>{{ timeArrayT[index] }}</div>
-        </div>
-        <div class="a1">
-          <div>{{ timeArrayT[index] }}</div>
-        </div>
+        <!-- 翻页动画div -->
+        <div :class="['face',{ anime: isAnimate[index] }]"
+             @animationend="onAnimateEnd(index)">{{ timeArrayT[index] }}</div>
+        <div :class="['back',{ anime: isAnimate[index] }]">{{ item }}</div>
       </div>
-      <div class="time-unit" :key="`unit-${index}`" v-if="isTimeUnitShow(index)">
+      <!-- 文字 -->
+      <div class="time-unit"
+           :key="`unit-${index}`"
+           v-if="isTimeUnitShow(index)">
         {{ setTimeUnit(index) }}
       </div>
     </template>
@@ -25,17 +26,26 @@
 export default {
   data() {
     return {
-      color: "#fffffe",
-      timeArray: this.theme === 2 ? new Array(this.type * 2).fill("0") : new Array(this.type).fill("00"),
-      timeArrayT: this.theme === 2 ? new Array(this.type * 2).fill("0") : new Array(this.type).fill("00"),
-      isAnimate: this.theme === 2 ? new Array(this.type * 2).fill(false) : new Array(this.type).fill(false),
+      isIE: false,
+      timeArray:
+        this.theme === 2
+          ? new Array(this.type * 2).fill("0")
+          : new Array(this.type).fill("00"),
+      timeArrayT:
+        this.theme === 2
+          ? new Array(this.type * 2).fill("0")
+          : new Array(this.type).fill("00"),
+      isAnimate:
+        this.theme === 2
+          ? new Array(this.type * 2).fill(false)
+          : new Array(this.type).fill(false)
     };
   },
   props: {
     endDate: { type: [Date, Number, String], default: 0 }, // 截止时间
     type: { type: [Number, String], default: 4 }, // 时间精度 4/3/2/1
     theme: { type: [Number, String], default: 1 },
-    timeUnit: { type: Array, default: () => [] },
+    timeUnit: { type: Array, default: () => [] }
   },
   computed: {
     endTime() {
@@ -50,18 +60,23 @@ export default {
     arr() {
       const length = this.timeArray.length;
       const step = this.step;
-      const temp = [length - 1, length - step - 1, length - step * 2 - 1, length - step * 3 - 1];
+      const temp = [
+        length - 1,
+        length - step - 1,
+        length - step * 2 - 1,
+        length - step * 3 - 1
+      ];
       temp.length = this.type > 1 ? this.type : 1;
       return temp;
-    },
+    }
   },
   watch: {
     timeArray(newV, oldV) {
       const diff = [];
       newV.forEach((value, index) => {
         if (value !== oldV[index]) {
-          this.$set(this.isAnimate, index, true);
           diff.push({ value, index });
+          this.$set(this.isAnimate, index, true);
         }
       });
       setTimeout(() => {
@@ -74,15 +89,18 @@ export default {
       if (newV > 0) {
         this.start();
       }
-    },
+    }
   },
 
   mounted() {
+    if (
+      window.ActiveXObject ||
+      "ActiveXObject" in window ||
+      window.navigator.userAgent.indexOf("Edge") > -1
+    ) {
+      this.isIE = true;
+    }
     this.start(0);
-    // 这么做是为了浏览器细微渲染时错位的问题
-    setTimeout(() => {
-      this.color = "#ffffff";
-    }, 1000);
   },
   beforeDestroy() {
     clearTimeout(this.timer);
@@ -128,31 +146,28 @@ export default {
             arr.push(
               ...String(day)
                 .padStart(2, "0")
-                .split(""),
+                .split("")
             );
           type >= 3 &&
             arr.push(
               ...String(hour)
                 .padStart(2, "0")
-                .split(""),
+                .split("")
             );
           type >= 2 &&
             arr.push(
               ...String(min)
                 .padStart(2, "0")
-                .split(""),
+                .split("")
             );
           arr.push(
             ...String(second)
               .padStart(2, "0")
-              .split(""),
+              .split("")
           );
         }
         this.timeArray = arr;
-        // if (isFirst) {
-        //   this.timeArrayT = [...this.timeArray];
-        //   this.isAnimate = new Array(this.timeArray.length).fill(false);
-        // }
+
         if (t > 0) {
           this.start();
         } else {
@@ -184,33 +199,55 @@ export default {
         default:
           return this.timeUnit[0] || ""; // 天
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
 <style lang="less">
 .vue-countdown-component {
   display: flex;
-  @keyframes animate-filp {
+  @keyframes animate-filp-face {
     0% {
-      transform: rotateX(0);
+      transform: rotateX(-0.01deg);
+      opacity: 1; // 改变opacity 为了QQ浏览器和safari(不支持z-index animate)
+    }
+    50% {
+      opacity: 1;
+    }
+    51% {
+      opacity: 0;
     }
     100% {
       transform: rotateX(-180deg);
+      opacity: 0;
     }
   }
-  @keyframes animate-filp2 {
+  @keyframes animate-filp-back {
     0% {
       transform: rotateX(180deg);
     }
     100% {
-      transform: rotateX(0);
+      transform: rotateX(-0.01deg);
+    }
+  }
+  &.ie {
+    // 为了ie和老版edge（不支持clip-path）
+    .base {
+      .base-b {
+        clip: rect(15px, auto, auto, auto);
+      }
+    }
+    .face {
+      clip: rect(auto, auto, 15px, auto);
+    }
+    .back {
+      clip: rect(15px, auto, auto, auto);
     }
   }
   &.theme2 {
     .time-box {
-      min-width: 21px;
+      min-width: 20px;
       & + .time-box {
         margin-left: 1px;
       }
@@ -228,18 +265,20 @@ export default {
     box-sizing: border-box;
     height: 30px;
     min-width: 28px;
-    font-size: 16px;
+    font-size: 14px;
     text-align: center;
-    line-height: 30px;
     background-color: #6c96e8;
-    perspective: 50px;
+    perspective: 60px;
     border-radius: 3px;
     padding: 0 2px;
+    color: #fff;
+    line-height: 30px;
+
     &:before {
       content: "";
       position: absolute;
       background: #a7c7ff;
-      width: 2px;
+      width: 1px;
       height: 6px;
       top: 50%;
       left: -1px;
@@ -250,7 +289,7 @@ export default {
       content: "";
       position: absolute;
       background: #a7c7ff;
-      width: 2px;
+      width: 1px;
       height: 6px;
       top: 50%;
       right: -1px;
@@ -261,63 +300,54 @@ export default {
       margin-left: 8px;
     }
     & > div {
-      position: absolute;
-      left: 0;
-      width: 100%;
-      height: 50%;
       overflow: hidden;
-      flex: none;
-
-      transform-style: preserve-3d;
-      & > div {
+      animation-timing-function: linear;
+      animation-duration: 400ms;
+      // 为了chrome，需要一个小的角度，否则字体渲染错位
+      transform: rotateX(-0.01deg);
+      border-radius: 3px;
+      &.base {
+        position: relative;
+        .base-b {
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          border-radius: 0 0 3px 3px;
+          width: 100%;
+          height: 100%;
+          background-color: #709bf1; // a1比base浅一点点，为了模拟翻页的阴影效果
+          // background-color: #0ff;
+          clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+        }
+      }
+      &.face {
         position: absolute;
         left: 0;
-        width: 100%;
-        height: 30px;
-      }
-      animation-timing-function: linear;
-      &.a0 {
         top: 0;
-        // opacity: 0;
-        border-radius: 3px 3px 0 0;
+        width: 100%;
+        height: 100%;
         background-color: #6c96e8;
-        transform-origin: 50% bottom;
-        animation-duration: 400ms;
-        // animation-fill-mode: none;
-        transform: rotateX(0);
-        backface-visibility: hidden;
+        // background-color: #f00;
+        backface-visibility: visible;
+        clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
         z-index: 2;
         &.anime {
-          animation-name: animate-filp;
-        }
-        & > div {
-          top: 0;
+          animation-name: animate-filp-face;
         }
       }
-      &.b0 {
-        top: 15px;
-        border-radius: 0 0 3px 3px;
-        background-color: #73a1f8;
-        transform-origin: 50% top;
-        animation-duration: 400ms;
-        // animation-fill-mode: none;
-        transform: rotateX(180deg);
-        backface-visibility: visible; // 这个需要是visible，因为背面不渲染的话，连里面的数据浏览器都不会更新
-
-        z-index: 2;
-        & > div {
-          bottom: 0;
-        }
+      &.back {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #709bf1; // b0和a1一致
+        // background-color: #aa0;
+        transform: rotateX(-180deg);
+        backface-visibility: visible;
+        clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
         &.anime {
-          animation-name: animate-filp2;
-        }
-      }
-      &.a1 {
-        top: 15px;
-        border-radius: 0 0 3px 3px;
-        background-color: #73a1f8;
-        & > div {
-          bottom: 0;
+          animation-name: animate-filp-back;
         }
       }
     }
