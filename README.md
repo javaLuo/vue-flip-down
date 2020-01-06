@@ -8,6 +8,9 @@
 ### 示例
 ![img](public/demo.gif)
 
+### 在线DEMO
+https://isluo.com/work/vue-filp-down/
+
 ### 安装
 ```
 npm install vue-flip-down --save
