@@ -9,7 +9,8 @@
 ![img](public/demo.gif)
 
 ### 在线DEMO
-https://isluo.com/work/vue-filp-down/
+<a href="https://isluo.com/work/vue-filp-down/" target="_blank">https://isluo.com/work/vue-filp-down/</a>
+
 
 ### 安装
 ```
