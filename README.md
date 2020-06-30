@@ -3,7 +3,7 @@
 
 
 这是一个简单的翻页倒计时vue组件，项目中有用到，所以提取了一下。<br/>
-你们也可以直接把`src/app.vue`文件拷贝到项目里直接用，就不用`npm install` 了
+你们也可以直接把`src/app.vue`文件拷贝到项目里直接用，就是个普通vue组件，就不用`npm install` 了
 
 ### 示例
 ![img](public/demo.gif)
