@@ -16,6 +16,7 @@ module.exports = {
     filename: "[name].js", //编译后的文件名字
     library: ["vue-flip-down"],
     libraryTarget: "umd",
+    globalObject: 'this'
   },
   externals: {
     vue: "vue",
