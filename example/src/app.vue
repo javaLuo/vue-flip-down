@@ -1,34 +1,47 @@
 <template>
   <div>
-    <CountDown :endDate="endDate" :type="type" :theme="1" :timeUnit="['天', '时', '分', '秒']" @timeUp="onTimeUp" />
+    <AuthModelMy :show="isShow"
+                 @close="onClose" @success="onSuccess" @fail="onFail"/>
 
     <hr />
-    <input v-model="type" />
-    <input v-model="endDate" />
-    <div>{{ timeUp }}</div>
+    <button @click="onShow">开始验证</button>
   </div>
 </template>
 <script>
-// import CountDown from "../../dist/main.js";
-import CountDown from "../../src/index.js";
+import { ref } from "vue";
+import AuthModelMy from "../../dist/vue3-puzzle-vcode.umd.min.js";
+// import AuthModelMy from "../../src/app.vue";
+import Img1 from "./assets/1.jpg";
 export default {
-  data() {
-    return {
-      timeUp: false,
-      type: 2,
-      endDate: new Date().getTime() + 5000,
-    };
-  },
+
   components: {
-    CountDown,
+    AuthModelMy
   },
-  methods: {
-    onTypeChange(t) {
-      this.type = t;
-    },
-    onTimeUp() {
-      this.timeUp = true;
-    },
-  },
+  setup(){
+    const isShow = ref(false);
+    const onShow = () => {
+      isShow.value = true;
+    }
+    const onClose = () => {
+      isShow.value = false;
+    }
+
+    const onSuccess = (e) => {
+      console.log('验证成功:', e);
+      onClose();
+    }
+
+    const onFail = (e) => {
+      console.log('验证失败:', e);
+      onClose();
+    }
+    return {
+      isShow,
+      onShow,
+      onClose,
+      onSuccess,
+      onFail
+    }
+  }
 };
 </script>

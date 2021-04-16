@@ -5,6 +5,10 @@
 这是一个简单的翻页倒计时vue组件，项目中有用到，所以提取了一下。<br/>
 你们也可以直接把`src/app.vue`文件拷贝到项目里直接用，就是个普通vue组件，就不用`npm install` 了
 
+# 注意：vue2.x 和 vue3.x
+**vue-flip-down 1.x的版本仅适用于vue2.x**<br/>
+**vue-flip-down 3.x的版本仅适用于vue3.x**
+
 ### 示例
 ![img](public/demo.gif)
 
@@ -15,10 +19,6 @@
 ### 安装
 ```
 npm install vue-flip-down --save
-```
-或
-```
-yarn add vue-flip-down 
 ```
 
 ### 使用

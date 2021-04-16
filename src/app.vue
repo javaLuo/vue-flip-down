@@ -1,21 +1,30 @@
 <!-- 翻页效果 倒计时组件 -->
 <template>
-  <div :class="['vue-countdown-component', { theme2: theme !== 1 }, {ie: isIE}]">
-    <template v-for="(item, index) in timeArray">
-      <div :class="['time-box']"
-           :key="index">
+  <div
+    :class="['vue-countdown-component', { theme2: theme !== 1 }, { ie: isIE }]"
+  >
+    <template v-for="(item, index) in timeArray" :key="index">
+      <div :class="['time-box']">
         <!-- 底层基础div -->
-        <div class="base">{{ item }}<div class="base-b">{{ timeArrayT[index] }}</div>
+        <div class="base">
+          {{ item }}
+          <div class="base-b">{{ timeArrayT[index] }}</div>
         </div>
         <!-- 翻页动画div -->
-        <div :class="['face',{ anime: isAnimate[index] }]"
-             @animationend="onAnimateEnd(index)">{{ timeArrayT[index] }}</div>
-        <div :class="['back',{ anime: isAnimate[index] }]">{{ item }}</div>
+        <div
+          :class="['face', { anime: isAnimate[index] }]"
+          @animationend="onAnimateEnd(index)"
+        >
+          {{ timeArrayT[index] }}
+        </div>
+        <div :class="['back', { anime: isAnimate[index] }]">{{ item }}</div>
       </div>
       <!-- 文字 -->
-      <div class="time-unit"
-           :key="`unit-${index}`"
-           v-if="isTimeUnitShow(index)">
+      <div
+        class="time-unit"
+        :key="`unit-${index}`"
+        v-if="isTimeUnitShow(index)"
+      >
         {{ setTimeUnit(index) }}
       </div>
     </template>
@@ -23,100 +32,104 @@
 </template>
 
 <script>
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 export default {
-  data() {
-    return {
-      isIE: false,
-      timeArray:
-        this.theme === 2
-          ? new Array(this.type * 2).fill("0")
-          : new Array(this.type).fill("00"),
-      timeArrayT:
-        this.theme === 2
-          ? new Array(this.type * 2).fill("0")
-          : new Array(this.type).fill("00"),
-      isAnimate:
-        this.theme === 2
-          ? new Array(this.type * 2).fill(false)
-          : new Array(this.type).fill(false)
-    };
-  },
+  emits: ["timeUp"],
   props: {
     endDate: { type: [Date, Number, String], default: 0 }, // 截止时间
     type: { type: [Number, String], default: 4 }, // 时间精度 4/3/2/1
     theme: { type: [Number, String], default: 1 },
-    timeUnit: { type: Array, default: () => [] }
+    timeUnit: { type: Array, default: () => [] },
   },
-  computed: {
-    endTime() {
-      if (this.endDate instanceof Date) {
-        return this.endDate.getTime();
+  setup(props, context) {
+    const isIE = ref(false);
+    const timeArray = ref(
+      props.theme === 2
+        ? new Array(props.type * 2).fill("0")
+        : new Array(props.type).fill("00")
+    );
+    const timeArrayT = ref(
+      props.theme === 2
+        ? new Array(props.type * 2).fill("0")
+        : new Array(props.type).fill("00")
+    );
+    const isAnimate = ref(
+      props.theme === 2
+        ? new Array(props.type * 2).fill(false)
+        : new Array(props.type).fill(false)
+    );
+    const timer = ref(null);
+
+    const endTime = computed(() => {
+      if (props.endDate instanceof Date) {
+        return props.endDate.getTime();
       }
-      return Number(this.endDate) > 0 ? Number(this.endDate) : 0;
-    },
-    step() {
-      return this.theme === 1 ? 1 : 2;
-    },
-    arr() {
-      const length = this.timeArray.length;
-      const step = this.step;
+      return Number(props.endDate) > 0 ? Number(props.endDate) : 0;
+    });
+
+    const step = computed(() => (props.theme === 1 ? 1 : 2));
+    const arr = computed(() => {
+      const length = timeArray.value.length;
       const temp = [
         length - 1,
-        length - step - 1,
-        length - step * 2 - 1,
-        length - step * 3 - 1
+        length - step.value - 1,
+        length - step.value * 2 - 1,
+        length - step.value * 3 - 1,
       ];
-      temp.length = this.type > 1 ? this.type : 1;
+      temp.length = props.type > 1 ? props.type : 1;
       return temp;
-    }
-  },
-  watch: {
-    timeArray(newV, oldV) {
+    });
+
+    watch(timeArray, (newV, oldV) => {
       const diff = [];
       newV.forEach((value, index) => {
         if (value !== oldV[index]) {
           diff.push({ value, index });
-          this.$set(this.isAnimate, index, true);
+          isAnimate.value[index] = true;
         }
       });
       setTimeout(() => {
-        diff.forEach(item => {
-          this.$set(this.timeArrayT, item.index, item.value);
+        diff.forEach((item) => {
+          timeArrayT.value[item.index] = item.value;
         });
       }, 350);
-    },
-    endTime(newV) {
-      if (newV > 0) {
-        this.start();
-      }
-    }
-  },
+    });
 
-  mounted() {
-    if (
-      window.ActiveXObject ||
-      "ActiveXObject" in window ||
-      window.navigator.userAgent.indexOf("Edge") > -1
-    ) {
-      this.isIE = true;
-    }
-    this.start(0);
-  },
-  beforeDestroy() {
-    clearTimeout(this.timer);
-  },
-  methods: {
-    // 开始倒计时
-    start(step = 1000) {
-      clearTimeout(this.timer);
-      this.timer = setTimeout(() => {
-        let t = this.endTime - new Date().getTime(); // 剩余的毫秒数
+    watch(endTime, (newV) => {
+      if (newV > 0) {
+        start();
+      }
+    });
+
+    onMounted(() => {
+      if (
+        window.ActiveXObject ||
+        "ActiveXObject" in window ||
+        window.navigator.userAgent.indexOf("Edge") > -1
+      ) {
+        isIE.value = true;
+      }
+      start(0);
+    });
+
+    onBeforeUnmount(() => {
+      clearTimeout(timer.value);
+    });
+
+    /**
+     * 开始倒计时
+     * @param st 重复执行的间隔时间
+     */
+    const start = (st = 1000) => {
+      clearTimeout(timer.value);
+      timer.value = setTimeout(() => {
+        let t = endTime.value - new Date().getTime(); // 剩余的毫秒数
         t = t < 0 ? 0 : t;
         let day = 0; // 剩余的天
         let hour = 0; // 剩余的小时
         let min = 0; // 剩余的分钟
         let second = 0; // 剩余的秒
-        const type = Number(this.type);
+        const type = Number(props.type);
         if (type >= 4) {
           day = Math.floor(t / 86400000); // 剩余的天
           hour = Math.floor(t / 3600000 - day * 24); // 剩余的小时 已排除天
@@ -133,74 +146,71 @@ export default {
           second = Math.floor(t / 1000); // 剩余的秒
         }
 
-        let arr = [];
-        if (Number(this.theme) === 1) {
+        let ar = [];
+        if (Number(props.theme) === 1) {
           // 不分开
-          type >= 4 && arr.push(String(day).padStart(2, "0"));
-          type >= 3 && arr.push(String(hour).padStart(2, "0"));
-          type >= 2 && arr.push(String(min).padStart(2, "0"));
-          arr.push(String(second).padStart(2, "0"));
+          type >= 4 && ar.push(String(day).padStart(2, "0"));
+          type >= 3 && ar.push(String(hour).padStart(2, "0"));
+          type >= 2 && ar.push(String(min).padStart(2, "0"));
+          ar.push(String(second).padStart(2, "0"));
         } else {
           // 分开
-          type >= 4 &&
-            arr.push(
-              ...String(day)
-                .padStart(2, "0")
-                .split("")
-            );
-          type >= 3 &&
-            arr.push(
-              ...String(hour)
-                .padStart(2, "0")
-                .split("")
-            );
-          type >= 2 &&
-            arr.push(
-              ...String(min)
-                .padStart(2, "0")
-                .split("")
-            );
-          arr.push(
-            ...String(second)
-              .padStart(2, "0")
-              .split("")
-          );
+          type >= 4 && ar.push(...String(day).padStart(2, "0").split(""));
+          type >= 3 && ar.push(...String(hour).padStart(2, "0").split(""));
+          type >= 2 && ar.push(...String(min).padStart(2, "0").split(""));
+          ar.push(...String(second).padStart(2, "0").split(""));
         }
-        this.timeArray = arr;
+        timeArray.value = ar;
 
         if (t > 0) {
-          this.start();
+          start();
         } else {
-          this.$emit("timeUp");
+          context.emit("timeUp");
         }
-      }, step);
-    },
+      }, st);
+    };
+
     // 动画完毕后，去掉对应的class, 为下次动画做准备
-    onAnimateEnd(index) {
-      this.$set(this.isAnimate, index, false);
-    },
-    isTimeUnitShow(index) {
-      if (this.arr.includes(index)) {
-        if (index === this.timeArray.length - 1 && !this.timeUnit[3]) {
+    const onAnimateEnd = (index) => {
+      isAnimate.value[index] = false;
+    };
+
+    const isTimeUnitShow = (index) => {
+      if (arr.value.includes(index)) {
+        if (index === timeArray.value.length - 1 && !props.timeUnit[3]) {
           return false;
         }
         return true;
       }
       return false;
-    },
-    setTimeUnit(index) {
+    };
+
+    const setTimeUnit = (index) => {
       switch (index) {
-        case this.timeArray.length - 1:
-          return this.timeUnit[3] || ""; // 秒
-        case this.timeArray.length - this.step - 1:
-          return this.timeUnit[2] || ""; // 分
-        case this.timeArray.length - this.step * 2 - 1:
-          return this.timeUnit[1] || ""; // 时
+        case timeArray.value.length - 1:
+          return props.timeUnit[3] || ""; // 秒
+        case timeArray.value.length - step.value - 1:
+          return props.timeUnit[2] || ""; // 分
+        case timeArray.value.length - step.value * 2 - 1:
+          return props.timeUnit[1] || ""; // 时
         default:
-          return this.timeUnit[0] || ""; // 天
+          return props.timeUnit[0] || ""; // 天
       }
-    }
-  }
+    };
+
+    return {
+      isIE,
+      timeArray,
+      timeArrayT,
+      isAnimate,
+      endTime,
+      step,
+      arr,
+      onAnimateEnd,
+      isTimeUnitShow,
+      setTimeUnit,
+    };
+  },
 };
 </script>
 
