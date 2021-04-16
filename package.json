@@ -1,17 +1,17 @@
 {
-  "name": "vue-flip-down",
-  "version": "3.0.0",
+  "name": "vue3-d",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib",
-    "lint": "vue-cli-service lint",
-    "prettier": "prettier --write \"{src,mock}/**/*.{js,css,less,vue}\""
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
   },
-  "files": ["dist"],
-  "main": "./dist/vue-flip-down.umd.min.js",
   "dependencies": {
     "core-js": "^3.6.5",
-    "vue": "^3.0.0"
+    "element-plus": "^1.0.2-beta.40",
+    "vue": "^3.0.0",
+    "vue-flip-down": "^3.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -20,6 +20,7 @@
     "@vue/compiler-sfc": "^3.0.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",
+    "babel-plugin-import": "^1.13.3",
     "eslint": "^6.7.2",
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-vue": "^7.0.0",
@@ -28,7 +29,7 @@
     "prettier": "^2.2.1"
   },
   "eslintConfig": {
-    "root": false,
+    "root": true,
     "env": {
       "node": true
     },
