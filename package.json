@@ -1,50 +1,32 @@
 {
   "name": "vue-flip-down",
-  "version": "3.0.0",
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib",
-    "lint": "vue-cli-service lint",
-    "prettier": "prettier --write \"{src,mock}/**/*.{js,css,less,vue}\""
+  "version": "3.1.0",
+  "files": [
+    "dist"
+  ],
+  "module": "./dist/vue-flip-down.es.js",
+  "main": "./dist/vue-flip-down.umd.js",
+  "typings": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/vue-flip-down.es.js",
+      "require": "./dist/vue-flip-down.umd.js"
+    }
   },
-  "files": ["dist"],
-  "main": "./dist/vue-flip-down.umd.min.js",
-  "dependencies": {
-    "core-js": "^3.6.5",
-    "vue": "^3.0.0"
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
-    "@vue/compiler-sfc": "^3.0.0",
-    "@vue/eslint-config-prettier": "^6.0.0",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-prettier": "^3.3.1",
-    "eslint-plugin-vue": "^7.0.0",
-    "less": "^3.0.4",
-    "less-loader": "^5.0.0",
-    "prettier": "^2.2.1"
-  },
-  "eslintConfig": {
-    "root": false,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "eslint:recommended",
-      "@vue/prettier"
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "rules": {}
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+    "@types/node": "^17.0.31",
+    "@vitejs/plugin-vue": "^2.3.3",
+    "less": "^4.1.2",
+    "typescript": "^4.5.4",
+    "vite": "^2.9.9",
+    "vite-plugin-dts": "^1.1.1",
+    "vite-plugin-libcss": "^1.0.5",
+    "vue": "^3.2.25",
+    "vue-tsc": "^0.34.7"
+  }
 }
